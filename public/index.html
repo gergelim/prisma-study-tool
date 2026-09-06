@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prisma Study Tool — Questões de Vestibular</title>
+  <meta name="description" content="Ferramenta local para praticar questões de vestibular do Estude Prisma">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ── Sidebar ─────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎯</div>
+      <h1>Prisma Study</h1>
+      <span>Questões de Vestibular</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Principal</div>
+
+      <button class="nav-item active" data-page="dashboard">
+        <span class="icon">🏠</span>
+        <span>Dashboard</span>
+      </button>
+
+      <button class="nav-item" data-page="import">
+        <span class="icon">⬇️</span>
+        <span>Importar Questões</span>
+      </button>
+
+      <button class="nav-item" data-page="questions">
+        <span class="icon">📋</span>
+        <span>Questões</span>
+      </button>
+
+      <button class="nav-item" data-page="quiz">
+        <span class="icon">✏️</span>
+        <span>Resolver</span>
+      </button>
+
+      <div class="nav-label" style="margin-top:12px">Progresso</div>
+
+      <button class="nav-item" data-page="progress">
+        <span class="icon">📊</span>
+        <span>Meu Progresso</span>
+      </button>
+
+      <div class="divider" style="margin:12px 0"></div>
+      <div class="nav-label">Ações Rápidas</div>
+
+      <button class="nav-item" onclick="syncDisciplines()" style="color:var(--accent-light)">
+        <span class="icon">🔄</span>
+        <span>Sincronizar Matérias</span>
+      </button>
+
+      <button class="nav-item" onclick="startNextQuestion()">
+        <span class="icon">▶</span>
+        <span>Próxima Não Feita</span>
+      </button>
+    </nav>
+
+    <div class="theme-toggle-container">
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar Tema">
+        <span class="theme-toggle-icon">☀️</span>
+        <span class="theme-toggle-label">Modo Claro</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      Prisma Study Tool v1.0
+    </div>
+  </aside>
+
+  <!-- ── Main Content ────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- ── Dashboard ─── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Visão geral do seu progresso de estudos</p>
+      </div>
+      <div id="dashboard-content">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Import ─── -->
+    <div class="page" id="page-import">
+      <div class="page-header">
+        <h1 class="page-title">Importar Questões</h1>
+        <p class="page-subtitle">Extraia questões do Estude Prisma e salve no banco local</p>
+      </div>
+      <div id="import-content">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Questions ─── -->
+    <div class="page" id="page-questions">
+      <div class="page-header">
+        <h1 class="page-title">Questões</h1>
+        <p class="page-subtitle">Filtre e selecione questões para resolver</p>
+      </div>
+      <div id="questions-content">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando questões...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Quiz ─── -->
+    <div class="page" id="page-quiz">
+      <div class="page-header">
+        <h1 class="page-title">Resolver Questão</h1>
+        <p class="page-subtitle">Leia o enunciado e selecione a alternativa correta</p>
+      </div>
+      <div id="quiz-content">
+        <div class="empty-state">
+          <div class="empty-icon">✏️</div>
+          <div class="empty-title">Nenhuma questão selecionada</div>
+          <div class="empty-text">Selecione uma questão na lista ou inicie a próxima não feita.</div>
+          <div class="flex gap-8 mt-16" style="justify-content:center">
+            <button class="btn btn-primary" onclick="startNextQuestion()">▶ Próxima Não Feita</button>
+            <button class="btn btn-secondary" onclick="navigate('questions')">📋 Ver Questões</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Progress ─── -->
+    <div class="page" id="page-progress">
+      <div class="page-header">
+        <h1 class="page-title">Meu Progresso</h1>
+        <p class="page-subtitle">Acompanhe seus acertos, erros e evolução por matéria</p>
+      </div>
+      <div id="progress-content">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando progresso...</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── Toast Container ─────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── Image Zoom Modal ────────────────────────── -->
+<div id="img-zoom-modal" class="img-zoom-modal" onclick="closeImgZoom()">
+  <span class="img-zoom-close">&times;</span>
+  <img id="img-zoom-src" class="img-zoom-content" alt="Imagem ampliada">
+</div>
+
+<script>
+function openImgZoom(src) {
+  const modal = document.getElementById('img-zoom-modal');
+  const img = document.getElementById('img-zoom-src');
+  if (modal && img) {
+    img.src = src;
+    modal.classList.add('active');
+  }
+}
+function closeImgZoom() {
+  const modal = document.getElementById('img-zoom-modal');
+  if (modal) modal.classList.remove('active');
+}
+</script>
+
+<!-- ── Scripts ────────────────────────────────── -->
+<script src="/js/app.js"></script>
+<script src="/js/import.js"></script>
+<script src="/js/questions.js"></script>
+<script src="/js/quiz.js"></script>
+<script src="/js/progress.js"></script>
+
+</body>
+</html>
