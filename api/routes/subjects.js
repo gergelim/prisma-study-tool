@@ -48,4 +48,44 @@ router.post('/sync', async (req, res) => {
   }
 });
 
+// POST /api/subjects/custom — create or get a custom discipline
+router.post('/custom', (req, res) => {
+  const { name } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Nome da matéria é obrigatório' });
+  }
+  const db = getDb();
+  const trimmed = name.trim();
+  const slug = trimmed
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  // Check if already exists (case-insensitive)
+  const existing = db.prepare('SELECT * FROM disciplines WHERE LOWER(name) = LOWER(?) OR slug = ?').get(trimmed, slug);
+  if (existing) {
+    return res.json({ discipline: existing, created: false });
+  }
+
+  const id = `custom:${Date.now()}`;
+  const color = '#8CD3FF';
+  db.prepare(`
+    INSERT INTO disciplines (id, name, slug, color)
+    VALUES (?, ?, ?, ?)
+  `).run(id, trimmed, slug, color);
+
+  const newDisc = {
+    id,
+    name: trimmed,
+    slug,
+    color,
+    subjects: [],
+    questionCount: 0
+  };
+
+  res.json({ discipline: newDisc, created: true });
+});
+
 module.exports = router;

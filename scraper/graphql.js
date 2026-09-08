@@ -171,10 +171,10 @@ async function getQuestions(disciplineId, subjectId, offset = 0, limit = 50) {
   if (!disciplineId && !subjectId) {
     return query(GET_ALL_QUESTIONS, { limit, offset });
   }
-  if (disciplineId) {
+  if (disciplineId && !disciplineId.startsWith('custom:')) {
     return query(GET_QUESTIONS_BY_DISCIPLINE, { limit, offset, disciplineId });
   }
-  // Subject-only filter (fallback to all questions)
+  // Custom discipline or fallback to all questions
   return query(GET_ALL_QUESTIONS, { limit, offset });
 }
 

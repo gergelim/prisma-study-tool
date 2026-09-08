@@ -6,11 +6,6 @@ async function renderImport() {
     await loadDisciplines();
   }
 
-  // Build discipline select options
-  const discOptions = state.disciplines.length > 0
-    ? state.disciplines.map(d => `<option value="${d.id}">${d.name} (${d.questionCount || 0} questões locais)</option>`).join('')
-    : '<option value="" disabled>Nenhuma disciplina — sincronize primeiro</option>';
-
   el.innerHTML = `
     <div class="import-panel">
       <!-- Left: Config -->
@@ -29,12 +24,28 @@ async function renderImport() {
               </button>
             ` : ''}
 
+            <!-- Combobox Pesquisável de Matéria -->
             <div class="form-group">
-              <label class="form-label">Matéria</label>
-              <select class="form-control" id="import-disc" onchange="loadSubjectsForImport()">
-                <option value="">Todas as matérias</option>
-                ${discOptions}
-              </select>
+              <label class="form-label" for="import-disc-input">Matéria</label>
+              <div class="combobox-container" id="disc-combobox">
+                <div class="combobox-input-wrap">
+                  <span class="combobox-icon-search">🔎</span>
+                  <input type="text"
+                         class="combobox-input"
+                         id="import-disc-input"
+                         placeholder="Digite para pesquisar ou criar matéria..."
+                         autocomplete="off"
+                         spellcheck="false">
+                  <button type="button"
+                          class="combobox-clear-btn"
+                          id="import-disc-clear"
+                          title="Limpar seleção"
+                          aria-label="Limpar">✕</button>
+                  <!-- Campo oculto mantendo 100% de compatibilidade com backend -->
+                  <input type="hidden" id="import-disc" value="">
+                </div>
+                <div class="combobox-dropdown" id="import-disc-dropdown" role="listbox"></div>
+              </div>
             </div>
 
             <div class="form-group">
@@ -115,7 +126,248 @@ async function renderImport() {
     </div>
   `;
 
+  initDisciplineCombobox();
   await loadRecentJobs();
+}
+
+/**
+ * Controla o combobox pesquisável e customizável de matérias.
+ */
+function initDisciplineCombobox() {
+  const container = document.getElementById('disc-combobox');
+  const input = document.getElementById('import-disc-input');
+  const hidden = document.getElementById('import-disc');
+  const clearBtn = document.getElementById('import-disc-clear');
+  const dropdown = document.getElementById('import-disc-dropdown');
+
+  if (!container || !input || !hidden || !clearBtn || !dropdown) return;
+
+  let activeIndex = -1;
+  let currentItems = [];
+
+  function norm(str) {
+    return (str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  function highlight(fullText, query) {
+    if (!query) return escapeHtml(fullText);
+    const nFull = norm(fullText);
+    const nQuery = norm(query);
+    const idx = nFull.indexOf(nQuery);
+    if (idx === -1) return escapeHtml(fullText);
+
+    const before = fullText.substring(0, idx);
+    const match = fullText.substring(idx, idx + query.length);
+    const after = fullText.substring(idx + query.length);
+    return `${escapeHtml(before)}<span class="combobox-match">${escapeHtml(match)}</span>${escapeHtml(after)}`;
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function openDropdown() {
+    renderDropdown();
+    dropdown.classList.add('open');
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    activeIndex = -1;
+  }
+
+  function renderDropdown() {
+    const query = input.value.trim();
+    const normQuery = norm(query);
+    dropdown.innerHTML = '';
+    currentItems = [];
+
+    const disciplines = state.disciplines || [];
+    let filtered = [];
+
+    if (!normQuery) {
+      filtered = [...disciplines];
+    } else {
+      filtered = disciplines.filter(d => {
+        return norm(d.name).includes(normQuery) || norm(d.slug).includes(normQuery);
+      });
+    }
+
+    const hasExactMatch = disciplines.some(d => norm(d.name) === normQuery);
+
+    if (filtered.length > 0) {
+      filtered.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'combobox-item';
+        if (hidden.value === d.id) {
+          item.classList.add('selected');
+        }
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-id', d.id);
+        item.setAttribute('data-name', d.name);
+
+        const countText = d.questionCount ? `${d.questionCount} questões locais` : '';
+        item.innerHTML = `
+          <span>${highlight(d.name, query)}</span>
+          ${countText ? `<span class="combobox-item-count">${countText}</span>` : ''}
+        `;
+
+        item.addEventListener('click', () => {
+          selectDiscipline(d);
+        });
+
+        dropdown.appendChild(item);
+        currentItems.push({ type: 'existing', data: d, element: item });
+      });
+    }
+
+    // Custom option if user typed something and it does not match an existing discipline exactly
+    if (query && !hasExactMatch) {
+      const customOpt = document.createElement('div');
+      customOpt.className = 'combobox-custom-option';
+      customOpt.setAttribute('role', 'option');
+      customOpt.innerHTML = `<span>+ Usar "<strong>${escapeHtml(query)}</strong>" como matéria personalizada</span>`;
+
+      customOpt.addEventListener('click', () => {
+        selectCustomDiscipline(query);
+      });
+
+      dropdown.appendChild(customOpt);
+      currentItems.push({ type: 'custom', name: query, element: customOpt });
+    }
+
+    // Empty state if nothing matches and no query
+    if (filtered.length === 0 && !query) {
+      const empty = document.createElement('div');
+      empty.className = 'combobox-empty';
+      empty.textContent = 'Nenhuma matéria sincronizada';
+      dropdown.appendChild(empty);
+    }
+
+    activeIndex = -1;
+    updateHighlight();
+  }
+
+  function updateHighlight() {
+    currentItems.forEach((item, idx) => {
+      if (idx === activeIndex) {
+        item.element.classList.add('highlighted');
+        item.element.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.element.classList.remove('highlighted');
+      }
+    });
+  }
+
+  function selectDiscipline(disc) {
+    input.value = disc.name;
+    hidden.value = disc.id;
+    clearBtn.style.display = 'flex';
+    closeDropdown();
+    loadSubjectsForImport();
+  }
+
+  async function selectCustomDiscipline(name) {
+    showToast(`Registrando matéria personalizada "${name}"...`, 'info');
+    const result = await POST('/subjects/custom', { name });
+    if (result.error) {
+      showToast('Erro ao criar matéria: ' + result.error, 'error');
+      return;
+    }
+
+    const disc = result.discipline;
+    if (!state.disciplines.some(d => d.id === disc.id)) {
+      state.disciplines.push(disc);
+      state.disciplines.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    selectDiscipline(disc);
+    showToast(`Matéria "${disc.name}" selecionada!`, 'success');
+  }
+
+  // Input listeners
+  input.addEventListener('focus', () => {
+    openDropdown();
+  });
+
+  input.addEventListener('input', () => {
+    clearBtn.style.display = input.value ? 'flex' : 'none';
+    if (!input.value) {
+      hidden.value = '';
+      loadSubjectsForImport();
+    }
+    openDropdown();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (!dropdown.classList.contains('open')) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        openDropdown();
+        e.preventDefault();
+        return;
+      }
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (currentItems.length > 0) {
+        activeIndex = (activeIndex + 1) % currentItems.length;
+        updateHighlight();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (currentItems.length > 0) {
+        activeIndex = (activeIndex - 1 + currentItems.length) % currentItems.length;
+        updateHighlight();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIndex >= 0 && currentItems[activeIndex]) {
+        const item = currentItems[activeIndex];
+        if (item.type === 'existing') {
+          selectDiscipline(item.data);
+        } else if (item.type === 'custom') {
+          selectCustomDiscipline(item.name);
+        }
+      } else if (input.value.trim()) {
+        if (currentItems.length > 0) {
+          const first = currentItems[0];
+          if (first.type === 'existing') {
+            selectDiscipline(first.data);
+          } else {
+            selectCustomDiscipline(first.name);
+          }
+        } else {
+          selectCustomDiscipline(input.value.trim());
+        }
+      }
+    } else if (e.key === 'Escape') {
+      closeDropdown();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    hidden.value = '';
+    clearBtn.style.display = 'none';
+    loadSubjectsForImport();
+    input.focus();
+    openDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!container.contains(e.target)) {
+      closeDropdown();
+    }
+  });
 }
 
 async function syncDisciplinesForImport() {

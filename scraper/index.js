@@ -199,6 +199,9 @@ async function importQuestions(jobId, options = {}) {
           totalSkipped++;
         } else {
           const mapped = mapQuestion(q);
+          if (job.discipline_id && job.discipline_id.startsWith('custom:')) {
+            mapped.disciplineId = job.discipline_id;
+          }
 
           db.prepare(`
             INSERT OR IGNORE INTO questions
