@@ -22,6 +22,7 @@ app.use('/api/subjects',   require('./api/routes/subjects'));
 app.use('/api/questions',  require('./api/routes/questions'));
 app.use('/api/import',     require('./api/routes/import'));
 app.use('/api/progress',   require('./api/routes/progress'));
+app.use('/api/ai',         require('./api/routes/ai'));
 
 // ── SPA fallback ──────────────────────────────────────────────
 app.get('*', (req, res) => {

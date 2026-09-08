@@ -58,6 +58,12 @@
         <span>Próxima</span>
       </button>
 
+      <!-- Botão Discreto de IA -->
+      <button class="ai-header-btn" id="ai-toggle-btn" onclick="toggleAIPanel()" aria-label="Assistente de IA de estudos" title="Assistente de Estudos (✦ IA)">
+        <span class="ai-btn-icon">✦</span>
+        <span class="ai-btn-label">IA</span>
+      </button>
+
       <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar tema claro/escuro" title="Alternar tema">
         <span class="theme-toggle-icon">☀️</span>
       </button>
@@ -65,6 +71,35 @@
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu mobile">
         ☰
       </button>
+    </div>
+
+    <!-- ── Painel Dropdown da IA ──────────────────────── -->
+    <div class="ai-panel" id="ai-panel" role="dialog" aria-label="Assistente de Estudos" aria-hidden="true">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">
+          <span class="ai-title-icon">✦</span>
+          <span>Assistente</span>
+        </div>
+        <div class="ai-panel-actions">
+          <button class="ai-icon-btn" onclick="startNewAIConversation()" title="Iniciar nova conversa" aria-label="Nova conversa">＋</button>
+          <button class="ai-icon-btn" onclick="closeAIPanel()" title="Fechar painel" aria-label="Fechar">✕</button>
+        </div>
+      </div>
+
+      <div class="ai-messages" id="ai-messages">
+        <!-- Histórico e mensagens são inseridos aqui -->
+      </div>
+
+      <div class="ai-input-box">
+        <textarea id="ai-prompt-input"
+                  class="ai-input"
+                  placeholder="Tire sua dúvida sobre os estudos..."
+                  rows="1"
+                  maxlength="1000"></textarea>
+        <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()" title="Enviar pergunta (Enter)" aria-label="Enviar">
+          ➤
+        </button>
+      </div>
     </div>
   </header>
 
@@ -182,6 +217,7 @@ function toggleMobileMenu() {
 <script src="/js/questions.js"></script>
 <script src="/js/quiz.js"></script>
 <script src="/js/progress.js"></script>
+<script src="/js/ai.js"></script>
 
 </body>
 </html>

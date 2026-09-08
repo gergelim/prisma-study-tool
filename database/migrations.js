@@ -72,6 +72,24 @@ function runMigrations(db) {
     CREATE INDEX IF NOT EXISTS idx_questions_discipline ON questions(discipline_id);
     CREATE INDEX IF NOT EXISTS idx_questions_subject ON questions(subject_id);
     CREATE INDEX IF NOT EXISTS idx_user_answers_question ON user_answers(question_id);
+
+    CREATE TABLE IF NOT EXISTS ai_conversations (
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS ai_messages (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_ai_messages_conv ON ai_messages(conversation_id);
   `);
 
   seedInitialData(db);
