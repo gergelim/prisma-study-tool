@@ -222,8 +222,54 @@ body {
 }
 
 .nav-item .icon {
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
+}
+
+.nav-item .icon svg,
+.nav-item svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ── Lucide Icons Base Styling ─────────────────────────────── */
+.lucide, .lucide-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.mr-4 { margin-right: 4px; }
+.mr-6 { margin-right: 6px; }
+.mr-8 { margin-right: 8px; }
+.toast-icon { flex-shrink: 0; display: inline-flex; }
+
+.empty-state .empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.empty-state .empty-icon svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.6;
+}
+
+.result-box .result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.result-box .result-icon svg {
+  width: 26px;
+  height: 26px;
 }
 
 .nav-item:hover {

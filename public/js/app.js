@@ -55,15 +55,21 @@ function navigate(page) {
   if (page === 'import')    renderImport();
   if (page === 'questions') renderQuestions();
   if (page === 'progress')  renderProgress();
+
+  if (window.refreshIcons) window.refreshIcons();
 }
 
 // ── Toast Notifications ──────────────────────────────────────
 function showToast(message, type = 'info') {
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const iconMarkup = {
+    success: window.iconSvg ? window.iconSvg('check-circle-2', { size: 16, class: 'toast-icon text-green' }) : '',
+    error:   window.iconSvg ? window.iconSvg('alert-circle', { size: 16, class: 'toast-icon text-red' }) : '',
+    info:    window.iconSvg ? window.iconSvg('info', { size: 16, class: 'toast-icon text-blue' }) : ''
+  };
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${icons[type]}</span><span>${message}</span>`;
+  toast.innerHTML = `<span>${iconMarkup[type] || ''}</span><span>${message}</span>`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
 }
@@ -101,17 +107,23 @@ function applyTheme(theme, showNotice = false) {
   const labels = document.querySelectorAll('.theme-toggle-label');
   const isLight = theme === 'light';
 
-  icons.forEach(i => i.textContent = isLight ? '🌙' : '☀️');
+  icons.forEach(i => {
+    i.innerHTML = window.iconSvg
+      ? window.iconSvg(isLight ? 'moon' : 'sun', { size: 17 })
+      : `<i data-lucide="${isLight ? 'moon' : 'sun'}"></i>`;
+  });
   labels.forEach(l => l.textContent = isLight ? 'Modo Escuro' : 'Modo Claro');
 
   const btn = document.getElementById('theme-toggle-btn');
   if (btn) {
-    btn.title = isLight ? 'Alternar para Modo Escuro (🌙)' : 'Alternar para Modo Claro (☀️)';
+    btn.title = isLight ? 'Alternar para Modo Escuro' : 'Alternar para Modo Claro';
   }
 
   if (showNotice) {
-    showToast(isLight ? '☀️ Modo Claro ativado' : '🌙 Modo Escuro ativado', 'info');
+    showToast(isLight ? 'Modo Claro ativado' : 'Modo Escuro ativado', 'info');
   }
+
+  if (window.refreshIcons) window.refreshIcons();
 }
 
 function toggleTheme() {
@@ -122,6 +134,7 @@ function toggleTheme() {
 
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  if (window.refreshIcons) window.refreshIcons();
   initTheme();
 
   // Wire nav items
@@ -198,13 +211,13 @@ async function renderDashboard() {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">📚 Matérias Disponíveis</div>
+        <div class="section-title">${window.iconSvg ? window.iconSvg('book-open', { size: 18, class: 'mr-6' }) : ''}Matérias Disponíveis</div>
         <button class="btn btn-secondary btn-sm" onclick="navigate('import')">+ Importar questões</button>
       </div>
       <div class="section-body">
         ${disciplines.length === 0
           ? `<div class="empty-state">
-              <div class="empty-icon">📂</div>
+              <div class="empty-icon">${window.iconSvg ? window.iconSvg('folder-open', { size: 44 }) : ''}</div>
               <div class="empty-title">Nenhuma matéria carregada</div>
               <div class="empty-text">Sincronize as disciplinas para começar</div>
               <button class="btn btn-primary" onclick="syncDisciplines()">Sincronizar disciplinas</button>
@@ -223,8 +236,8 @@ async function renderDashboard() {
 
     ${d.totalQuestions > 0 ? `
     <div class="flex gap-12 flex-wrap mt-16">
-      <button class="btn btn-primary btn-lg" onclick="startNextQuestion()">▶ Próxima Questão Não Feita</button>
-      <button class="btn btn-secondary btn-lg" onclick="navigate('questions')">📋 Ver Todas as Questões</button>
+      <button class="btn btn-primary btn-lg" onclick="startNextQuestion()">${window.iconSvg ? window.iconSvg('play', { size: 15, class: 'mr-6', fill: 'currentColor' }) : ''}Próxima Questão Não Feita</button>
+      <button class="btn btn-secondary btn-lg" onclick="navigate('questions')">${window.iconSvg ? window.iconSvg('file-text', { size: 15, class: 'mr-6' }) : ''}Ver Todas as Questões</button>
     </div>` : ''}
   `;
 }

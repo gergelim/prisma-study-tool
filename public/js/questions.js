@@ -25,7 +25,7 @@ async function renderQuestions() {
       <!-- Combobox Pesquisável de Matéria -->
       <div class="combobox-container" id="q-disc-combobox" style="min-width:220px;max-width:300px;">
         <div class="combobox-input-wrap">
-          <span class="combobox-icon-search">🔎</span>
+          <span class="combobox-icon-search">${window.iconSvg ? window.iconSvg('search', { size: 15 }) : ''}</span>
           <input type="text"
                  class="combobox-input"
                  id="q-disc-input"
@@ -38,7 +38,7 @@ async function renderQuestions() {
                   id="q-disc-clear"
                   style="${selectedDisc ? 'display:flex' : 'display:none'}"
                   title="Limpar filtro de matéria"
-                  aria-label="Limpar">✕</button>
+                  aria-label="Limpar">${window.iconSvg ? window.iconSvg('x', { size: 14 }) : ''}</button>
           <input type="hidden" id="q-disc-select" value="${state.questionDiscipline || ''}">
         </div>
         <div class="combobox-dropdown" id="q-disc-dropdown" role="listbox"></div>
@@ -47,15 +47,27 @@ async function renderQuestions() {
       <select class="form-control" style="width:auto;min-width:180px" id="q-subj-select" onchange="onSubjChange()">
         ${subjOptions}
       </select>
-      <button class="btn btn-secondary btn-sm" onclick="startNextQuestion()">▶ Próxima não feita</button>
+      <button class="btn btn-secondary btn-sm" onclick="startNextQuestion()">
+        ${window.iconSvg ? window.iconSvg('play', { size: 13, class: 'mr-4', fill: 'currentColor' }) : ''}Próxima não feita
+      </button>
     </div>
 
     <div class="filters-bar">
-      <button class="filter-btn ${state.questionFilter==='all'?'active':''}" onclick="setFilter('all')">📋 Todas</button>
-      <button class="filter-btn ${state.questionFilter==='unanswered'?'active':''}" onclick="setFilter('unanswered')">⚪ Não feitas</button>
-      <button class="filter-btn ${state.questionFilter==='answered'?'active':''}" onclick="setFilter('answered')">🔵 Feitas</button>
-      <button class="filter-btn ${state.questionFilter==='correct'?'active':''}" onclick="setFilter('correct')">🟢 Acertadas</button>
-      <button class="filter-btn ${state.questionFilter==='incorrect'?'active':''}" onclick="setFilter('incorrect')">🔴 Erradas</button>
+      <button class="filter-btn ${state.questionFilter==='all'?'active':''}" onclick="setFilter('all')">
+        ${window.iconSvg ? window.iconSvg('list', { size: 14, class: 'mr-4' }) : ''}Todas
+      </button>
+      <button class="filter-btn ${state.questionFilter==='unanswered'?'active':''}" onclick="setFilter('unanswered')">
+        ${window.iconSvg ? window.iconSvg('circle', { size: 12, class: 'mr-4' }) : ''}Não feitas
+      </button>
+      <button class="filter-btn ${state.questionFilter==='answered'?'active':''}" onclick="setFilter('answered')">
+        ${window.iconSvg ? window.iconSvg('check-circle', { size: 13, class: 'mr-4 text-blue' }) : ''}Feitas
+      </button>
+      <button class="filter-btn ${state.questionFilter==='correct'?'active':''}" onclick="setFilter('correct')">
+        ${window.iconSvg ? window.iconSvg('check-circle-2', { size: 13, class: 'mr-4 text-green' }) : ''}Acertadas
+      </button>
+      <button class="filter-btn ${state.questionFilter==='incorrect'?'active':''}" onclick="setFilter('incorrect')">
+        ${window.iconSvg ? window.iconSvg('x-circle', { size: 13, class: 'mr-4 text-red' }) : ''}Erradas
+      </button>
     </div>
 
     <div id="questions-list-container">
@@ -145,7 +157,7 @@ function initQuestionsDisciplineCombobox() {
       allOption.classList.add('selected');
     }
     allOption.setAttribute('role', 'option');
-    allOption.innerHTML = `<span>📋 <em>Todas as matérias</em></span>`;
+    allOption.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">${window.iconSvg ? window.iconSvg('layers', { size: 14, class: 'text-muted' }) : ''}<em>Todas as matérias</em></span>`;
     allOption.addEventListener('click', () => {
       selectDiscipline(null);
     });
@@ -349,19 +361,21 @@ async function loadQuestionsList() {
   if (questions.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🔍</div>
+        <div class="empty-icon">${window.iconSvg ? window.iconSvg('search', { size: 44 }) : ''}</div>
         <div class="empty-title">Nenhuma questão encontrada</div>
         <div class="empty-text">Tente mudar os filtros ou importe questões primeiro.</div>
-        <button class="btn btn-primary" onclick="navigate('import')">⬇️ Importar Questões</button>
+        <button class="btn btn-primary" onclick="navigate('import')">
+          ${window.iconSvg ? window.iconSvg('download', { size: 15, class: 'mr-6' }) : ''}Importar Questões
+        </button>
       </div>
     `;
     return;
   }
 
   const statusIcon = (q) => {
-    if (!q.answered_at) return { cls: 'unanswered', icon: '⚪', label: 'Não feita' };
-    if (q.user_correct == 1) return { cls: 'correct', icon: '🟢', label: 'Acertou' };
-    return { cls: 'incorrect', icon: '🔴', label: 'Errou' };
+    if (!q.answered_at) return { cls: 'unanswered', icon: window.iconSvg ? window.iconSvg('circle', { size: 11, class: 'mr-4 text-muted' }) : '', label: 'Não feita' };
+    if (q.user_correct == 1) return { cls: 'correct', icon: window.iconSvg ? window.iconSvg('check-circle-2', { size: 12, class: 'mr-4 text-green' }) : '', label: 'Acertou' };
+    return { cls: 'incorrect', icon: window.iconSvg ? window.iconSvg('x-circle', { size: 12, class: 'mr-4 text-red' }) : '', label: 'Errou' };
   };
 
   container.innerHTML = `
@@ -382,8 +396,8 @@ async function loadQuestionsList() {
               </div>
               <div class="q-preview">${preview || '(sem enunciado)'}</div>
               <div class="q-badges">
-                <span class="badge ${s.cls === 'unanswered' ? 'badge-muted' : s.cls === 'correct' ? 'badge-green' : 'badge-red'}">${s.icon} ${s.label}</span>
-                ${q.has_images ? '<span class="badge badge-accent">📷 Com imagem</span>' : ''}
+                <span class="badge ${s.cls === 'unanswered' ? 'badge-muted' : s.cls === 'correct' ? 'badge-green' : 'badge-red'}">${s.icon}${s.label}</span>
+                ${q.has_images ? `<span class="badge badge-accent">${window.iconSvg ? window.iconSvg('image', { size: 12, class: 'mr-4' }) : ''}Com imagem</span>` : ''}
               </div>
             </div>
           </div>

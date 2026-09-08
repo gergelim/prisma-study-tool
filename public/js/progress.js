@@ -9,10 +9,12 @@ async function renderProgress() {
   if (progress.length === 0) {
     el.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">📊</div>
+        <div class="empty-icon">${window.iconSvg ? window.iconSvg('bar-chart-3', { size: 44 }) : ''}</div>
         <div class="empty-title">Sem dados de progresso</div>
         <div class="empty-text">Importe questões e comece a responder para ver seu progresso.</div>
-        <button class="btn btn-primary" onclick="navigate('import')">⬇️ Importar Questões</button>
+        <button class="btn btn-primary" onclick="navigate('import')">
+          ${window.iconSvg ? window.iconSvg('download', { size: 15, class: 'mr-6' }) : ''}Importar Questões
+        </button>
       </div>
     `;
     return;
@@ -75,7 +77,7 @@ async function renderProgress() {
     <!-- Per Discipline -->
     <div class="section">
       <div class="section-header">
-        <div class="section-title">📚 Por Matéria</div>
+        <div class="section-title">${window.iconSvg ? window.iconSvg('book-open', { size: 18, class: 'mr-6' }) : ''}Por Matéria</div>
       </div>
       <div class="section-body" style="padding:12px 16px">
         ${withQuestions.length === 0

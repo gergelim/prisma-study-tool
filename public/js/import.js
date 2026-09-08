@@ -12,15 +12,16 @@ async function renderImport() {
       <div>
         <div class="section">
           <div class="section-header">
-            <div class="section-title">⚙️ Configurar Extração</div>
+            <div class="section-title">${window.iconSvg ? window.iconSvg('settings-2', { size: 18, class: 'mr-6' }) : ''}Configurar Extração</div>
           </div>
           <div class="section-body">
             ${state.disciplines.length === 0 ? `
-              <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:13px;">
-                ⚠️ Sincronize as disciplinas antes de importar.
+              <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:8px;">
+                ${window.iconSvg ? window.iconSvg('alert-triangle', { size: 16, class: 'text-yellow flex-shrink-0' }) : ''}
+                <span>Sincronize as disciplinas antes de importar.</span>
               </div>
               <button class="btn btn-secondary btn-full" onclick="syncDisciplinesForImport()">
-                🔄 Sincronizar Disciplinas
+                ${window.iconSvg ? window.iconSvg('refresh-cw', { size: 14, class: 'mr-6' }) : ''}Sincronizar Disciplinas
               </button>
             ` : ''}
 
@@ -29,7 +30,7 @@ async function renderImport() {
               <label class="form-label" for="import-disc-input">Matéria</label>
               <div class="combobox-container" id="disc-combobox">
                 <div class="combobox-input-wrap">
-                  <span class="combobox-icon-search">🔎</span>
+                  <span class="combobox-icon-search">${window.iconSvg ? window.iconSvg('search', { size: 15 }) : ''}</span>
                   <input type="text"
                          class="combobox-input"
                          id="import-disc-input"
@@ -40,7 +41,7 @@ async function renderImport() {
                           class="combobox-clear-btn"
                           id="import-disc-clear"
                           title="Limpar seleção"
-                          aria-label="Limpar">✕</button>
+                          aria-label="Limpar">${window.iconSvg ? window.iconSvg('x', { size: 14 }) : ''}</button>
                   <!-- Campo oculto mantendo 100% de compatibilidade com backend -->
                   <input type="hidden" id="import-disc" value="">
                 </div>
@@ -56,7 +57,7 @@ async function renderImport() {
             </div>
 
             <button class="btn btn-primary btn-full btn-lg" id="import-btn" onclick="startImport()">
-              ⬇️ Extrair Questões
+              ${window.iconSvg ? window.iconSvg('download', { size: 16, class: 'mr-6' }) : ''}Extrair Questões
             </button>
           </div>
         </div>
@@ -64,8 +65,8 @@ async function renderImport() {
         <!-- Recent Jobs -->
         <div class="section mt-16" id="import-jobs-section">
           <div class="section-header">
-            <div class="section-title">📋 Importações Recentes</div>
-            <button class="btn btn-secondary btn-sm" onclick="loadRecentJobs()">↻ Atualizar</button>
+            <div class="section-title">${window.iconSvg ? window.iconSvg('history', { size: 18, class: 'mr-6' }) : ''}Importações Recentes</div>
+            <button class="btn btn-secondary btn-sm" onclick="loadRecentJobs()">${window.iconSvg ? window.iconSvg('refresh-cw', { size: 13, class: 'mr-4' }) : ''}Atualizar</button>
           </div>
           <div class="section-body" id="import-jobs-list">
             <div class="text-muted" style="font-size:13px;">Carregando...</div>
@@ -77,7 +78,7 @@ async function renderImport() {
       <div>
         <div class="section" id="import-progress-section" style="display:none">
           <div class="section-header">
-            <div class="section-title">⏳ Progresso da Extração</div>
+            <div class="section-title">${window.iconSvg ? window.iconSvg('loader-2', { size: 18, class: 'mr-6' }) : ''}Progresso da Extração</div>
             <span id="import-status-badge" class="badge badge-yellow">Em andamento</span>
           </div>
           <div class="section-body">
@@ -110,14 +111,14 @@ async function renderImport() {
 
             <div id="import-done-box" style="display:none;margin-top:16px">
               <div class="result-box correct">
-                <div class="result-icon">✅</div>
+                <div class="result-icon">${window.iconSvg ? window.iconSvg('check-circle-2', { size: 26, class: 'text-green' }) : ''}</div>
                 <div class="result-text">
                   <div class="result-title">Extração concluída!</div>
                   <div class="result-detail" id="import-done-summary"></div>
                 </div>
               </div>
               <button class="btn btn-primary btn-full" onclick="navigate('questions')">
-                📋 Ver questões importadas
+                ${window.iconSvg ? window.iconSvg('file-text', { size: 16, class: 'mr-6' }) : ''}Ver questões importadas
               </button>
             </div>
           </div>
@@ -536,23 +537,26 @@ async function loadRecentJobs() {
             ${statusMap[j.status] || ''}
             ${canRepair ? `
               <button class="btn btn-warning btn-sm" onclick="repairJob('${j.id}')" title="Retomar extração e baixar questões faltantes">
-                🛠️ Reparar
+                ${window.iconSvg ? window.iconSvg('wrench', { size: 13, class: 'mr-4' }) : ''}Reparar
               </button>
             ` : ''}
           </div>
         </div>
-        <div class="flex gap-12" style="color:var(--text-muted)">
-          <span>🔍 ${(j.total_found||0).toLocaleString('pt-BR')} encontradas</span>
-          <span>✅ ${(j.total_saved||0).toLocaleString('pt-BR')} novas</span>
-          <span>⏭ ${(j.total_skipped||0).toLocaleString('pt-BR')} existentes</span>
+        <div class="flex gap-12" style="color:var(--text-muted);align-items:center;">
+          <span style="display:inline-flex;align-items:center;">${window.iconSvg ? window.iconSvg('search', { size: 13, class: 'mr-4 text-muted' }) : ''}${(j.total_found||0).toLocaleString('pt-BR')} encontradas</span>
+          <span style="display:inline-flex;align-items:center;">${window.iconSvg ? window.iconSvg('check-circle-2', { size: 13, class: 'mr-4 text-green' }) : ''}${(j.total_saved||0).toLocaleString('pt-BR')} novas</span>
+          <span style="display:inline-flex;align-items:center;">${window.iconSvg ? window.iconSvg('skip-forward', { size: 13, class: 'mr-4 text-muted' }) : ''}${(j.total_skipped||0).toLocaleString('pt-BR')} existentes</span>
         </div>
         <div style="color:var(--text-muted);margin-top:4px;">${fmtDate(j.created_at)}</div>
         ${j.error_message ? `
           <div class="flex justify-between items-center mt-8" style="background:rgba(239,68,68,0.1);padding:7px 10px;border-radius:6px;border:1px solid rgba(239,68,68,0.25);">
-            <div class="text-red" style="font-size:11.5px;line-height:1.4;">⚠️ ${j.error_message}</div>
+            <div class="text-red" style="font-size:11.5px;line-height:1.4;display:flex;align-items:center;gap:6px;">
+              ${window.iconSvg ? window.iconSvg('alert-triangle', { size: 14, class: 'flex-shrink-0' }) : ''}
+              <span>${j.error_message}</span>
+            </div>
             ${canRepair ? `
               <button class="btn btn-warning btn-sm" style="padding:3px 9px;font-size:11px;margin-left:8px;" onclick="repairJob('${j.id}')">
-                🛠️ Reparar
+                ${window.iconSvg ? window.iconSvg('wrench', { size: 12, class: 'mr-4' }) : ''}Reparar
               </button>
             ` : ''}
           </div>

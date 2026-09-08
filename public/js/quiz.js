@@ -37,7 +37,7 @@ async function loadQuiz(questionId) {
 
   const data = await GET(`/questions/${questionId}`);
   if (data.error || !data.question) {
-    if (el) el.innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-title">Questão não encontrada</div></div>`;
+    if (el) el.innerHTML = `<div class="empty-state"><div class="empty-icon">${window.iconSvg ? window.iconSvg('x-circle', { size: 44, class: 'text-red' }) : ''}</div><div class="empty-title">Questão não encontrada</div></div>`;
     return;
   }
 
@@ -77,26 +77,26 @@ function renderQuiz() {
 
       <!-- Meta info badges -->
       <div class="flex gap-8 mb-16" style="flex-wrap:wrap">
-        ${q.institute ? `<span class="badge badge-muted">🏛 ${q.institute}</span>` : ''}
-        ${q.year ? `<span class="badge badge-muted">📅 ${q.year}</span>` : ''}
-        ${q.has_images ? `<span class="badge badge-accent">📷 Contém imagens</span>` : ''}
+        ${q.institute ? `<span class="badge badge-muted">${window.iconSvg ? window.iconSvg('landmark', { size: 12, class: 'mr-4' }) : ''}${q.institute}</span>` : ''}
+        ${q.year ? `<span class="badge badge-muted">${window.iconSvg ? window.iconSvg('calendar', { size: 12, class: 'mr-4' }) : ''}${q.year}</span>` : ''}
+        ${q.has_images ? `<span class="badge badge-accent">${window.iconSvg ? window.iconSvg('image', { size: 12, class: 'mr-4' }) : ''}Contém imagens</span>` : ''}
         ${alreadyAnswered
           ? (isCorrect
-              ? `<span class="badge badge-green">🟢 Você acertou</span>`
-              : `<span class="badge badge-red">🔴 Você errou</span>`)
-          : `<span class="badge badge-muted">⚪ Não respondida</span>`
+              ? `<span class="badge badge-green">${window.iconSvg ? window.iconSvg('check-circle-2', { size: 12, class: 'mr-4 text-green' }) : ''}Você acertou</span>`
+              : `<span class="badge badge-red">${window.iconSvg ? window.iconSvg('x-circle', { size: 12, class: 'mr-4 text-red' }) : ''}Você errou</span>`)
+          : `<span class="badge badge-muted">${window.iconSvg ? window.iconSvg('circle', { size: 11, class: 'mr-4 text-muted' }) : ''}Não respondida</span>`
         }
       </div>
 
       <!-- Already answered notice -->
       ${alreadyAnswered ? `
         <div class="already-answered-box">
-          <span style="font-size:20px">${isCorrect ? '✅' : '❌'}</span>
+          <span style="font-size:20px;display:flex;align-items:center;">${isCorrect ? (window.iconSvg ? window.iconSvg('check-circle-2', { size: 24, class: 'text-green' }) : '') : (window.iconSvg ? window.iconSvg('x-circle', { size: 24, class: 'text-red' }) : '')}</span>
           <div>
             <strong>Questão já respondida</strong>
             <br><span style="color:var(--text-muted)">Sua resposta: <strong>${ua.selected_answer}</strong>
             ${!isCorrect && q.correct_answer ? ` · Gabarito: <strong style="color:var(--green-text)">${q.correct_answer}</strong>` : ''}
-            · Resultado: <strong class="${isCorrect ? 'text-green' : 'text-red'}">${isCorrect ? '✓ Acertou' : '✗ Errou'}</strong></span>
+            · Resultado: <strong class="${isCorrect ? 'text-green' : 'text-red'}">${isCorrect ? (window.iconSvg ? window.iconSvg('check', { size: 13, class: 'mr-4' }) : '') + 'Acertou' : (window.iconSvg ? window.iconSvg('x', { size: 13, class: 'mr-4' }) : '') + 'Errou'}</strong></span>
           </div>
         </div>
         ${!isCorrect ? renderGoogleSearchGrabber() : ''}
@@ -132,10 +132,10 @@ function renderQuiz() {
       <div class="quiz-actions" id="quiz-actions">
         ${alreadyAnswered ? `
           <button class="btn btn-secondary" onclick="goNextQuestion()">Próxima questão →</button>
-          <button class="btn btn-secondary" onclick="navigate('questions')">📋 Lista de questões</button>
+          <button class="btn btn-secondary" onclick="navigate('questions')">${window.iconSvg ? window.iconSvg('list', { size: 15, class: 'mr-6' }) : ''}Lista de questões</button>
         ` : `
           <button class="btn btn-primary btn-lg" id="btn-answer" onclick="submitAnswer()" disabled>
-            ✓ Responder
+            ${window.iconSvg ? window.iconSvg('check', { size: 16, class: 'mr-6' }) : ''}Responder
           </button>
           <button class="btn btn-secondary" onclick="navigate('questions')">← Voltar à lista</button>
         `}
@@ -147,7 +147,7 @@ function renderQuiz() {
       <!-- Explanation -->
       ${alreadyAnswered && q.explanation ? `
         <div class="explanation-box">
-          <div class="exp-title">💡 Comentário do Professor</div>
+          <div class="exp-title">${window.iconSvg ? window.iconSvg('lightbulb', { size: 16, class: 'mr-6 text-yellow' }) : ''}Comentário do Professor</div>
           <div class="exp-body">${q.explanation}</div>
         </div>
       ` : '<div id="quiz-explanation"></div>'}
@@ -192,7 +192,10 @@ async function submitAnswer() {
 
   if (result.error) {
     showToast('Erro ao registrar resposta: ' + result.error, 'error');
-    if (btn) { btn.disabled = false; btn.innerHTML = '✓ Responder'; }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = (window.iconSvg ? window.iconSvg('check', { size: 16, class: 'mr-6' }) : '') + 'Responder';
+    }
     return;
   }
 
@@ -217,14 +220,14 @@ async function submitAnswer() {
   if (resultEl) {
     resultEl.innerHTML = result.isCorrect
       ? `<div class="result-box correct">
-           <div class="result-icon">🎉</div>
+           <div class="result-icon">${window.iconSvg ? window.iconSvg('trophy', { size: 28, class: 'text-green' }) : ''}</div>
            <div class="result-text">
              <div class="result-title">Correto! Você acertou!</div>
              <div class="result-detail">Alternativa <strong>${result.correctAnswer}</strong></div>
            </div>
          </div>`
       : `<div class="result-box incorrect">
-           <div class="result-icon">😔</div>
+           <div class="result-icon">${window.iconSvg ? window.iconSvg('alert-circle', { size: 28, class: 'text-red' }) : ''}</div>
            <div class="result-text">
              <div class="result-title">Incorreto! Você errou.</div>
              <div class="result-detail">Sua resposta: <strong>${result.selectedAnswer}</strong> · Gabarito: <strong>${result.correctAnswer}</strong></div>
@@ -238,7 +241,7 @@ async function submitAnswer() {
   if (explEl && quizState.question.explanation) {
     explEl.innerHTML = `
       <div class="explanation-box">
-        <div class="exp-title">💡 Comentário do Professor</div>
+        <div class="exp-title">${window.iconSvg ? window.iconSvg('lightbulb', { size: 16, class: 'mr-6 text-yellow' }) : ''}Comentário do Professor</div>
         <div class="exp-body">${quizState.question.explanation}</div>
       </div>
     `;
@@ -249,12 +252,12 @@ async function submitAnswer() {
   if (actionsEl) {
     actionsEl.innerHTML = `
       <button class="btn btn-primary" onclick="goNextQuestion()">Próxima questão →</button>
-      <button class="btn btn-secondary" onclick="navigate('questions')">📋 Lista</button>
+      <button class="btn btn-secondary" onclick="navigate('questions')">${window.iconSvg ? window.iconSvg('list', { size: 14, class: 'mr-4' }) : ''}Lista</button>
     `;
   }
 
   if (btn) btn.remove();
-  showToast(result.isCorrect ? '✅ Acertou!' : '❌ Errou!', result.isCorrect ? 'success' : 'error');
+  showToast(result.isCorrect ? 'Acertou!' : 'Errou!', result.isCorrect ? 'success' : 'error');
 }
 
 async function goNextQuestion() {
@@ -267,7 +270,7 @@ async function goNextQuestion() {
     await loadQuiz(data.questionId);
     window.scrollTo(0, 0);
   } else {
-    showToast('🎉 Parabéns! Todas as questões foram respondidas!', 'success');
+    showToast('Parabéns! Todas as questões foram respondidas!', 'success');
     navigate('progress');
   }
 }
@@ -277,7 +280,7 @@ function renderGoogleSearchGrabber() {
   return `
     <div class="google-grabber-card">
       <div class="google-grabber-info">
-        <div class="google-grabber-icon">🔍</div>
+        <div class="google-grabber-icon">${window.iconSvg ? window.iconSvg('search', { size: 20 }) : ''}</div>
         <div class="google-grabber-text">
           <strong>Errou a questão? Pesquise a resolução!</strong>
           Consulte explicações completas e resoluções comentadas no Google.

@@ -53,7 +53,7 @@ function renderAIEmptyState() {
 
   container.innerHTML = `
     <div class="ai-empty-state">
-      <div class="ai-empty-icon">✦</div>
+      <div class="ai-empty-icon">${window.iconSvg ? window.iconSvg('sparkles', { size: 30, class: 'text-accent' }) : ''}</div>
       <div>Tire dúvidas sobre matérias, conceitos, fórmulas ou a questão em estudo.</div>
     </div>
   `;
