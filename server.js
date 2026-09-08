@@ -37,15 +37,12 @@ app.listen(PORT, () => {
   const url = `http://localhost:${PORT}`;
   console.log('');
   console.log('  ╔══════════════════════════════════════════╗');
-  console.log('  ║       🎯  Prisma Study Tool v1.0         ║');
+  console.log('  ║             know • Study App             ║');
   console.log('  ╠══════════════════════════════════════════╣');
   console.log(`  ║  ► Acesse: ${url.padEnd(31)}║`);
   console.log('  ╠══════════════════════════════════════════╣');
   console.log('  ║  Pressione Ctrl+C para encerrar          ║');
   console.log('  ╚══════════════════════════════════════════╝');
-  console.log('');
-  console.log('  💡 Dica: Acesse a aplicação e clique em');
-  console.log('     "Sincronizar Matérias" para começar.');
   console.log('');
 });
 
