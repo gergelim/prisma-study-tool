@@ -20,7 +20,6 @@ async function renderProgress() {
 
   // Filter only disciplines with questions
   const withQuestions = progress.filter(p => p.stats.total > 0);
-  const empty = progress.filter(p => p.stats.total === 0);
 
   // Overall totals
   const totals = withQuestions.reduce((acc, p) => ({
@@ -60,13 +59,14 @@ async function renderProgress() {
       </div>
     </div>
 
-    ${totals.total > 0 ? `
+    <!-- Accuracy Ratio Bar -->
+    ${totals.answered > 0 ? `
     <div class="mb-16">
-      <div class="flex justify-between mb-8" style="font-size:13px;">
-        <span>Progresso geral: <strong>${overallPct}%</strong></span>
-        <span>Aproveitamento: <strong>${correctPct}%</strong></span>
+      <div class="flex justify-between mb-8" style="font-size:12px;color:var(--text-muted)">
+        <span>Taxa de Acerto: <strong class="text-green">${correctPct}%</strong> (${totals.correct} acertos)</span>
+        <span>${totals.incorrect} erros</span>
       </div>
-      <div class="progress-bar-wrap" style="height:12px">
+      <div class="progress-bar-wrap" style="height:10px">
         <div class="progress-bar-fill green" style="width:${correctPct}%;float:left;border-radius:0"></div>
         <div class="progress-bar-fill red" style="width:${(100-correctPct).toFixed(1)}%;float:left;background:var(--red)"></div>
       </div>
@@ -82,13 +82,6 @@ async function renderProgress() {
           ? '<div class="text-muted" style="font-size:13px;padding:16px 0">Nenhuma questão importada ainda.</div>'
           : withQuestions.map(p => renderDisciplineProgress(p)).join('')
         }
-        ${empty.length > 0 ? `
-          <div class="divider"></div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;">Sem questões importadas</div>
-          <div class="flex gap-8 flex-wrap">
-            ${empty.map(p => `<span class="badge badge-muted">${p.discipline.name}</span>`).join('')}
-          </div>
-        ` : ''}
       </div>
     </div>
   `;
