@@ -5,6 +5,30 @@ let quizState = {
   answered: false,
 };
 
+/**
+ * Sanitize raw HTML from the database: removes white-space:nowrap and other
+ * inline styles that would prevent the statement from wrapping correctly.
+ */
+function sanitizeStatementHtml(html) {
+  if (!html) return '';
+  // Use a temporary DOM element to parse and clean the HTML
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('[style]').forEach(el => {
+    // Remove white-space:nowrap from inline styles
+    let style = el.getAttribute('style') || '';
+    style = style.replace(/white-space\s*:\s*nowrap\s*;?/gi, '');
+    // Remove overflow:hidden and overflow-x:auto/scroll that can hide content
+    style = style.replace(/overflow(-x|-y)?\s*:\s*(hidden|auto|scroll)\s*;?/gi, '');
+    if (style.trim()) {
+      el.setAttribute('style', style);
+    } else {
+      el.removeAttribute('style');
+    }
+  });
+  return tmp.innerHTML;
+}
+
 async function loadQuiz(questionId) {
   const el = document.getElementById('quiz-content');
   if (el) {
@@ -83,7 +107,7 @@ function renderQuiz() {
         <div class="statement-header">
           <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)">Enunciado</div>
         </div>
-        <div class="quiz-statement" id="quiz-statement">${q.statement || ''}</div>
+        <div class="quiz-statement" id="quiz-statement">${sanitizeStatementHtml(q.statement)}</div>
       </div>
 
       <!-- Alternatives -->
