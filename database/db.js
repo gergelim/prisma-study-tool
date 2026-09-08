@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { runMigrations } = require('./migrations');
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'prisma.db');
+const DATA_DIR = process.env.KNOW_DATA_DIR || path.join(__dirname, '..', 'data');
+const DB_PATH = path.join(DATA_DIR, 'prisma.db');
 
 let db;
 

@@ -17,6 +17,9 @@ public/images/*
 # Binários e instaladores
 *.apk
 *.aab
+*.exe
+dist/
+build/*.exe
 
 # Variáveis de ambiente e segredos locais
 .env

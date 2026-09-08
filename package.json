@@ -1,11 +1,15 @@
 {
-  "name": "prisma-study-tool",
+  "name": "know-study-app",
   "version": "1.0.0",
-  "description": "Ferramenta local para scraping e resolução de questões do Estude Prisma",
-  "main": "server.js",
+  "description": "know — Plataforma prática e inteligente de questões com IA e acompanhamento de progresso",
+  "main": "main.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "desktop": "electron .",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable",
+    "dist:nsis": "electron-builder --win nsis"
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -15,5 +19,55 @@
     "express": "^4.21.2",
     "lucide": "^1.43.0",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.know.studyapp",
+    "productName": "know",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!.env",
+      "!scratch/**",
+      "!*.ps1"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "know"
+    },
+    "portable": {
+      "artifactName": "${productName}-portable.exe"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**"
+    ]
   }
 }
