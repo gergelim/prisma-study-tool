@@ -60,7 +60,7 @@ function renderQuiz() {
 
   // Breadcrumb
   const breadParts = [];
-  if (q.discipline_name) breadParts.push(`<span style="color:${q.discipline_color||'#6366f1'}">${q.discipline_name}</span>`);
+  if (q.discipline_name) breadParts.push(`<span style="color:var(--brand-blue-text);font-weight:600">${q.discipline_name}</span>`);
   if (q.parent_subject_name) breadParts.push(`<span>${q.parent_subject_name}</span>`);
   if (q.subject_name) breadParts.push(`<span>${q.subject_name}</span>`);
 
@@ -75,8 +75,8 @@ function renderQuiz() {
         </div>
       </div>
 
-      <!-- Meta info -->
-      <div class="flex gap-8 mb-16">
+      <!-- Meta info badges -->
+      <div class="flex gap-8 mb-16" style="flex-wrap:wrap">
         ${q.institute ? `<span class="badge badge-muted">🏛 ${q.institute}</span>` : ''}
         ${q.year ? `<span class="badge badge-muted">📅 ${q.year}</span>` : ''}
         ${q.has_images ? `<span class="badge badge-accent">📷 Contém imagens</span>` : ''}
@@ -91,11 +91,11 @@ function renderQuiz() {
       <!-- Already answered notice -->
       ${alreadyAnswered ? `
         <div class="already-answered-box">
-          <span style="font-size:18px">${isCorrect ? '✅' : '❌'}</span>
+          <span style="font-size:20px">${isCorrect ? '✅' : '❌'}</span>
           <div>
             <strong>Questão já respondida</strong>
             <br><span style="color:var(--text-muted)">Sua resposta: <strong>${ua.selected_answer}</strong>
-            ${!isCorrect && q.correct_answer ? ` · Gabarito: <strong style="color:var(--green)">${q.correct_answer}</strong>` : ''}
+            ${!isCorrect && q.correct_answer ? ` · Gabarito: <strong style="color:var(--green-text)">${q.correct_answer}</strong>` : ''}
             · Resultado: <strong class="${isCorrect ? 'text-green' : 'text-red'}">${isCorrect ? '✓ Acertou' : '✗ Errou'}</strong></span>
           </div>
         </div>
@@ -105,7 +105,7 @@ function renderQuiz() {
       <!-- Statement -->
       <div class="quiz-statement-box">
         <div class="statement-header">
-          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)">Enunciado</div>
+          <span class="statement-title">Enunciado</span>
         </div>
         <div class="quiz-statement" id="quiz-statement">${sanitizeStatementHtml(q.statement)}</div>
       </div>

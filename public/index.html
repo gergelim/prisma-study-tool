@@ -1,116 +1,95 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prisma Study Tool — Questões de Vestibular</title>
-  <meta name="description" content="Ferramenta local para praticar questões de vestibular do Estude Prisma">
+  <title>know — Prática de Questões</title>
+  <meta name="description" content="know — Plataforma prática de resolução de questões de vestibular com acompanhamento de progresso.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
 <div class="app-shell">
 
-  <!-- ── Sidebar ─────────────────────────────────── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🎯</div>
-      <h1>Prisma Study</h1>
-      <span>Questões de Vestibular</span>
+  <!-- ── Top Header Navigation ─────────────────────── -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-brand" onclick="navigate('dashboard')">
+        <div class="brand-symbol">k</div>
+        <span class="brand-text">know<span class="brand-dot">•</span></span>
+      </div>
+
+      <nav class="header-nav" id="header-nav">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="icon">🏠</span>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-page="questions">
+          <span class="icon">📋</span>
+          <span>Questões</span>
+        </button>
+
+        <button class="nav-item" data-page="quiz">
+          <span class="icon">✏️</span>
+          <span>Resolver</span>
+        </button>
+
+        <button class="nav-item" data-page="progress">
+          <span class="icon">📊</span>
+          <span>Progresso</span>
+        </button>
+
+        <button class="nav-item" data-page="import">
+          <span class="icon">⬇️</span>
+          <span>Importar</span>
+        </button>
+      </nav>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-label">Principal</div>
-
-      <button class="nav-item active" data-page="dashboard">
-        <span class="icon">🏠</span>
-        <span>Dashboard</span>
+    <div class="header-actions">
+      <button class="btn btn-secondary btn-sm" onclick="syncDisciplines()" title="Sincronizar matérias do banco">
+        <span>🔄</span>
+        <span>Sincronizar</span>
       </button>
 
-      <button class="nav-item" data-page="import">
-        <span class="icon">⬇️</span>
-        <span>Importar Questões</span>
+      <button class="btn-cta" onclick="startNextQuestion()" title="Iniciar próxima questão não feita">
+        <span>▶</span>
+        <span>Próxima</span>
       </button>
 
-      <button class="nav-item" data-page="questions">
-        <span class="icon">📋</span>
-        <span>Questões</span>
-      </button>
-
-      <button class="nav-item" data-page="quiz">
-        <span class="icon">✏️</span>
-        <span>Resolver</span>
-      </button>
-
-      <div class="nav-label" style="margin-top:12px">Progresso</div>
-
-      <button class="nav-item" data-page="progress">
-        <span class="icon">📊</span>
-        <span>Meu Progresso</span>
-      </button>
-
-      <div class="divider" style="margin:12px 0"></div>
-      <div class="nav-label">Ações Rápidas</div>
-
-      <button class="nav-item" onclick="syncDisciplines()" style="color:var(--accent-light)">
-        <span class="icon">🔄</span>
-        <span>Sincronizar Matérias</span>
-      </button>
-
-      <button class="nav-item" onclick="startNextQuestion()">
-        <span class="icon">▶</span>
-        <span>Próxima Não Feita</span>
-      </button>
-    </nav>
-
-    <div class="theme-toggle-container">
-      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar Tema">
+      <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar tema claro/escuro" title="Alternar tema">
         <span class="theme-toggle-icon">☀️</span>
-        <span class="theme-toggle-label">Modo Claro</span>
+      </button>
+
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu mobile">
+        ☰
       </button>
     </div>
+  </header>
 
-    <div class="sidebar-footer">
-      Prisma Study Tool v1.0
-    </div>
-  </aside>
-
-  <!-- ── Main Content ────────────────────────────── -->
+  <!-- ── Main Content Area ────────────────────────── -->
   <main class="main-content">
 
-    <!-- ── Dashboard ─── -->
+    <!-- ── Dashboard Page ─── -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
         <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Visão geral do seu progresso de estudos</p>
+        <p class="page-subtitle">Visão geral do seu progresso e métricas de estudo</p>
       </div>
       <div id="dashboard-content">
         <div class="loading-overlay">
           <div class="spinner"></div>
-          <span>Carregando...</span>
+          <span>Carregando dados...</span>
         </div>
       </div>
     </div>
 
-    <!-- ── Import ─── -->
-    <div class="page" id="page-import">
-      <div class="page-header">
-        <h1 class="page-title">Importar Questões</h1>
-        <p class="page-subtitle">Extraia questões do Estude Prisma e salve no banco local</p>
-      </div>
-      <div id="import-content">
-        <div class="loading-overlay">
-          <div class="spinner"></div>
-          <span>Carregando...</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Questions ─── -->
+    <!-- ── Questions Explorer Page ─── -->
     <div class="page" id="page-questions">
       <div class="page-header">
         <h1 class="page-title">Questões</h1>
-        <p class="page-subtitle">Filtre e selecione questões para resolver</p>
+        <p class="page-subtitle">Filtre por matéria, assunto ou status para praticar</p>
       </div>
       <div id="questions-content">
         <div class="loading-overlay">
@@ -120,18 +99,18 @@
       </div>
     </div>
 
-    <!-- ── Quiz ─── -->
+    <!-- ── Quiz Resolution Page ─── -->
     <div class="page" id="page-quiz">
-      <div class="page-header">
+      <div class="page-header" style="text-align:center; max-width:860px; margin: 0 auto 24px;">
         <h1 class="page-title">Resolver Questão</h1>
-        <p class="page-subtitle">Leia o enunciado e selecione a alternativa correta</p>
+        <p class="page-subtitle">Leia o enunciado atentamente e selecione a resposta correta</p>
       </div>
       <div id="quiz-content">
         <div class="empty-state">
           <div class="empty-icon">✏️</div>
-          <div class="empty-title">Nenhuma questão selecionada</div>
-          <div class="empty-text">Selecione uma questão na lista ou inicie a próxima não feita.</div>
-          <div class="flex gap-8 mt-16" style="justify-content:center">
+          <div class="empty-title">Nenhuma questão em andamento</div>
+          <div class="empty-text">Selecione uma questão na lista ou inicie automaticamente a próxima não respondida.</div>
+          <div class="flex gap-12 mt-16" style="justify-content:center">
             <button class="btn btn-primary" onclick="startNextQuestion()">▶ Próxima Não Feita</button>
             <button class="btn btn-secondary" onclick="navigate('questions')">📋 Ver Questões</button>
           </div>
@@ -139,16 +118,30 @@
       </div>
     </div>
 
-    <!-- ── Progress ─── -->
+    <!-- ── Progress Tracking Page ─── -->
     <div class="page" id="page-progress">
       <div class="page-header">
         <h1 class="page-title">Meu Progresso</h1>
-        <p class="page-subtitle">Acompanhe seus acertos, erros e evolução por matéria</p>
+        <p class="page-subtitle">Acompanhe sua taxa de acertos e aproveitamento por disciplina</p>
       </div>
       <div id="progress-content">
         <div class="loading-overlay">
           <div class="spinner"></div>
-          <span>Carregando progresso...</span>
+          <span>Carregando métricas de progresso...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Import & Scraper Page ─── -->
+    <div class="page" id="page-import">
+      <div class="page-header">
+        <h1 class="page-title">Importar Questões</h1>
+        <p class="page-subtitle">Extraia novas questões e salve no banco de dados local</p>
+      </div>
+      <div id="import-content">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando painel de importação...</span>
         </div>
       </div>
     </div>
@@ -161,7 +154,6 @@
 
 <!-- ── Image Zoom Modal ────────────────────────── -->
 <div id="img-zoom-modal" class="img-zoom-modal" onclick="closeImgZoom()">
-  <span class="img-zoom-close">&times;</span>
   <img id="img-zoom-src" class="img-zoom-content" alt="Imagem ampliada">
 </div>
 
@@ -177,6 +169,10 @@ function openImgZoom(src) {
 function closeImgZoom() {
   const modal = document.getElementById('img-zoom-modal');
   if (modal) modal.classList.remove('active');
+}
+function toggleMobileMenu() {
+  const nav = document.getElementById('header-nav');
+  if (nav) nav.classList.toggle('mobile-open');
 }
 </script>
 

@@ -43,8 +43,13 @@ function navigate(page) {
   const navEl = document.querySelector(`[data-page="${page}"]`);
   if (navEl) navEl.classList.add('active');
 
+  // Close mobile nav if open
+  const headerNav = document.getElementById('header-nav');
+  if (headerNav) headerNav.classList.remove('mobile-open');
+
   state.currentPage = page;
   window.location.hash = `#/${page}`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'import')    renderImport();
@@ -98,6 +103,11 @@ function applyTheme(theme, showNotice = false) {
 
   icons.forEach(i => i.textContent = isLight ? '🌙' : '☀️');
   labels.forEach(l => l.textContent = isLight ? 'Modo Escuro' : 'Modo Claro');
+
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) {
+    btn.title = isLight ? 'Alternar para Modo Escuro (🌙)' : 'Alternar para Modo Claro (☀️)';
+  }
 
   if (showNotice) {
     showToast(isLight ? '☀️ Modo Claro ativado' : '🌙 Modo Escuro ativado', 'info');
