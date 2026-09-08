@@ -1,70 +1,84 @@
-# 🎯 Prisma Study Tool
+# know• 
 
-> Plataforma local, autônoma e offline para estudos, resolução de questões de vestibulares e concursos, com importador automatizado, dashboard de métricas e suporte a temas claro e escuro.
+> **know** — Plataforma prática, moderna e inteligente de estudo ativo por questões com IA integrada, banco de dados local com mais de 39.000 questões e acompanhamento analítico de progresso.
 
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](#licen%C3%A7a)
-[![Database](https://img.shields.io/badge/Database-SQLite3-orange.svg)](https://www.sqlite.org/)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](#)
+[![Database](https://img.shields.io/badge/Database-SQLite%2039k%2B%20Questões-orange.svg)](https://www.sqlite.org/)
+[![Port](https://img.shields.io/badge/Port-3000-blue.svg)](http://localhost:3000)
+[![AI](https://img.shields.io/badge/AI-Google%20Gemini-8A2BE2.svg)](https://ai.google.dev/)
+[![Status](https://img.shields.io/badge/Status-Ready%20to%20Use-brightgreen.svg)](#)
 
 ---
 
-## 📖 Visão Geral
+## 📖 Sobre o know
 
-O **Prisma Study Tool** foi desenvolvido para oferecer a melhor experiência de estudo por questões, permitindo que você tenha controle total sobre seus dados e pratique mesmo sem internet. 
+O **know** foi desenhado do zero para transformar a rotina de concurseiros e vestibulandos. Em vez de interfaces lentas, anúncios ou dependência constante de conexão, o **know** roda **localmente na porta 3000**, unindo a velocidade do Node.js/SQLite com o poder analítico da inteligência artificial.
 
-A aplicação conecta-se à base de questões públicas do *Estude Prisma*, realiza a extração organizada dos dados para um banco de dados **SQLite local** e disponibiliza uma interface web fluida, rápida e responsiva.
-
----
-
-## ✨ Principais Recursos
-
-- 📚 **24 Disciplinas & 897 Assuntos Pré-carregados:** Acompanha semente inicial de dados (*seed data*). Ao iniciar o projeto, todas as matérias oficiais (Português, Matemática, Biologia, Física, Química, História, Geografia, etc.) já estão disponíveis imediatamente, sem telas vazias.
-- 📥 **Importador Resiliente com Função Reparar:** Extrai questões completas com enunciado, alternativas, gabarito e comentários do professor. Se a conexão falhar ou houver timeout de rede (ex: erro 504), o card em *Importações Recentes* exibe o botão **🛠️ Reparar**, retomando a importação exatamente de onde parou.
-- ✏️ **Ambiente Interativo de Resolução (Quiz):** Validação instantânea de respostas, indicação de acerto/erro, temporizador e comentários pedagógicos explicativos.
-- 🔍 **Google Search Grabber para Questões Erradas:** Errou uma questão difícil? Um clique higieniza o enunciado e abre a busca no Google com explicações comentadas e fóruns de discussão.
-- 🖼️ **Zoom em Imagens e Diagramas:** Clique em qualquer figura, mapa, charge ou fórmula para abrir o modal de ampliação em tela cheia.
-- 📊 **Dashboard de Desempenho:** Gráficos e indicadores de precisão por matéria, histórico de resoluções e lista de próximas questões não resolvidas.
-- ☀️/🌙 **Modo Claro e Modo Escuro:** Design system moderno com alternância instantânea de temas e persistência automática no navegador.
-- 🔒 **100% Local e Privado:** Nenhum dado de progresso é enviado a servidores externos. Seu histórico pertence a você.
+Com um banco de dados já pré-carregado contendo **mais de 39.000 questões**, **24 disciplinas** e **897 assuntos**, você tem em mãos um ecossistema completo para resolução, revisão de erros e acompanhamento do seu progresso diário.
 
 ---
 
-## 🚀 Pré-requisitos
+## ✨ Principais Destaques
 
-Para executar a solução localmente, você precisa ter instalado no seu computador:
-
-1. **[Node.js](https://nodejs.org/)** (versão 18.x, 20.x ou superior recomendada)
-2. **[Git](https://git-scm.com/)**
+- ⚡ **Rápido e Direto na Porta 3000:** Inicie com `npm start` e abra no seu navegador favorito (`http://localhost:3000`).
+- 📚 **39.000+ Questões & 24 Disciplinas:** Banco local `data/prisma.db` com cobertura abrangente de Português, Matemática, Biologia, Física, Química, História, Geografia, Filosofia, Sociologia, Direito e muito mais.
+- ✦ **Assistente de Estudos com IA (Gemini):**
+  - **Tira-Dúvidas Global:** Acesse o botão `✦ IA` no topo para solicitar cronogramas personalizados, planos de revisão, macetes mnemônicos e métodos de estudo.
+  - **Explicação Passo a Passo no Quiz:** Se errar ou tiver dúvida em uma questão, peça à IA para detalhar a lógica da questão, desmascarar pegadinhas e explicar por que cada distrator está incorreto.
+- 🎯 **Ambiente de Resolução Focado:**
+  - Layout centrado de leitura limpa.
+  - Validação imediata com comentários pedagógicos.
+  - Atalhos de teclado no quiz (`1`-`5` ou `A`-`E` para marcar, `Enter` para confirmar e seta `→` para a próxima).
+  - Botão **🔍 Pesquisar no Google** com enunciado higienizado para consultar fóruns ou resoluções comentadas externas.
+- 🔍 **Filtro Inteligente com Busca Tolerante a Acentos:**
+  - Encontre qualquer matéria ou tópico instantaneamente digitando no campo de busca (ex: "fisica", "quimica organica", "funcao afim").
+- 📊 **Métricas e Análise de Progresso:**
+  - Dashboard em tempo real com total de resoluções, taxa geral de acerto e maestria percentual por disciplina.
+- 🎨 **Design System Moderno:**
+  - Suporte completo a **Modo Escuro** e **Modo Claro** com persistência.
+  - Paleta com toques em azul celeste (`#8CD3FF`) e coral (`#FF513E`).
+  - Ícones vetoriais limpos e universais (Lucide SVG).
+- 🔒 **Privacidade e Dados Locais:**
+  - Todas as suas resoluções e notas ficam armazenadas no seu próprio disco rígido.
 
 ---
 
-## ⚡ Como Executar Localmente (Passo a Passo)
+## 🚀 Como Executar Localmente
 
-### 1. Clonar o repositório
-Abra o seu terminal (Bash, PowerShell ou Prompt de Comando) e execute:
+### Pré-requisitos
+- [Node.js](https://nodejs.org/) (versão 18.x ou superior recomendada)
+- [Git](https://git-scm.com/)
 
+---
+
+### Passo a Passo Rápido
+
+#### 1. Clonar o Repositório
 ```bash
 git clone https://github.com/gergelim/prisma-study-tool.git
 cd prisma-study-tool
 ```
 
-### 2. Instalar as dependências
-Execute o comando abaixo para instalar as dependências necessárias (`express`, `better-sqlite3`, `cheerio`, `axios`, etc.):
-
+#### 2. Instalar as Dependências
 ```bash
 npm install
 ```
 
-### 3. Iniciar o servidor
-Inicie a aplicação com o comando:
+#### 3. (Opcional) Configurar a Chave da IA (Google Gemini)
+Para utilizar o Assistente com IA (`✦ IA`), você pode configurar sua chave de API de duas maneiras:
+- **Pela interface web:** Clique no botão `✦ IA` no canto superior direito e selecione a engrenagem `⚙️` para inserir sua chave.
+- **Ou via arquivo `.env`:** Crie um arquivo `.env` na raiz do projeto com o conteúdo:
+  ```env
+  GEMINI_API_KEY=sua_chave_aqui
+  ```
+  *(Você pode gerar uma chave gratuita no [Google AI Studio](https://aistudio.google.com/app/apikey)).*
 
+#### 4. Iniciar a Aplicação
 ```bash
 npm start
 ```
 
-Você verá a seguinte mensagem de confirmação no console:
-
+Você verá a seguinte mensagem no terminal:
 ```text
   ╔══════════════════════════════════════════╗
   ║       🎯  Prisma Study Tool v1.0         ║
@@ -75,46 +89,40 @@ Você verá a seguinte mensagem de confirmação no console:
   ╚══════════════════════════════════════════╝
 ```
 
-### 4. Acessar a aplicação
-Abra o seu navegador de preferência e acesse:
+#### 5. Acessar no Navegador
+Abra seu navegador em:
 👉 **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
-## 🧭 Guia de Uso
+## 🧭 Guia das Seções
 
-### 🏠 1. Dashboard
-- Ao acessar a aplicação, você vê a quantidade de disciplinas carregadas, o número de questões salvas e a taxa global de acertos.
-- Use os botões de atalho: **▶ Próxima Questão Não Feita** ou **📋 Ver Todas as Questões**.
-
-### ⬇️ 2. Importando Questões
-1. Acesse o menu **Importar Questões**.
-2. Selecione a **Disciplina** desejada no seletor (ex: *Biologia*, *Física*, *História*).
-3. Opcionalmente, selecione um **Assunto/Tópico específico** e informe um limite de questões (ou deixe em branco para importar tudo).
-4. Clique em **Iniciar Importação**.
-5. O progresso é exibido em tempo real. Se ocorrer qualquer instabilidade de rede ou timeout (status 504), utilize o botão **🛠️ Reparar** no card da importação recente para retomar o processo.
-
-### 📋 3. Lista e Filtros de Questões
-- Filtre por matéria, assunto, status de resolução (*Todas*, *Não respondidas*, *Acertadas*, *Erradas*) ou pesquise por palavras-chave presentes no texto do enunciado.
-
-### ✏️ 4. Resolvendo Questões
-- Clique na alternativa escolhida (A, B, C, D ou E) e clique em **Confirmar Resposta**.
-- O gabarito é conferido imediatamente:
-  - Se acertar: parabéns! Veja o comentário explicativo do professor.
-  - Se errar: além da resposta correta, é exibido o card **🔍 Pesquisar no Google**, permitindo abrir resoluções comentadas diretamente em nova aba.
-- Toque em qualquer imagem ou fórmula do enunciado para ampliá-la em tela cheia.
+| Seção | O que você encontra |
+|---|---|
+| **🏠 Início (Dashboard)** | Visão geral do progresso, total de questões resolvidas, precisão global e atalho para a próxima questão pendente. |
+| **📋 Questões** | Catálogo completo das mais de 39.000 questões. Filtre por disciplina, tópico, texto livre e status (todas, resolvidas, pendentes ou erradas). |
+| **🎯 Resolver (Quiz)** | Modo focado para responder questões uma a uma, com suporte a teclado, tempo por questão e explicação imediata da IA. |
+| **📊 Progresso** | Detalhamento estatístico da sua taxa de acerto e evolução por matéria. |
+| **✦ IA (Assistente)** | Mentor virtual para tirar dúvidas conceituais, gerar roteiros de estudo e orientar seu método de aprendizagem. |
+| **📥 Importar** | Módulo de importação contínua para sincronizar novas listas ou reparar lotes parciais. |
 
 ---
 
-## ❓ FAQ — Perguntas Frequentes & Solução de Problemas
+## ⌨️ Atalhos de Teclado no Quiz
 
-### 1. Como alterar a porta do servidor se a porta 3000 já estiver em uso?
-Você pode definir a variável de ambiente `PORT` antes de iniciar:
+Durante a resolução de questões, você pode navegar sem tirar as mãos do teclado:
 
-- **Linux / macOS:**
-  ```bash
-  PORT=8080 npm start
-  ```
+- **`1`, `2`, `3`, `4`, `5`** ou **`A`, `B`, `C`, `D`, `E`**: Seleciona a alternativa correspondente.
+- **`Enter`**: Confirma a resposta selecionada.
+- **`Seta Direita (→)`**: Avança para a próxima questão.
+- **`Esc`**: Fecha modais de zoom de imagens ou janelas ativas.
+
+---
+
+## ❓ Perguntas Frequentes (FAQ)
+
+### 1. A porta 3000 já está em uso na minha máquina. Como alterar?
+Basta definir a variável de ambiente `PORT` antes de iniciar:
 - **Windows (PowerShell):**
   ```powershell
   $env:PORT=8080; npm start
@@ -123,74 +131,34 @@ Você pode definir a variável de ambiente `PORT` antes de iniciar:
   ```cmd
   set PORT=8080 && npm start
   ```
+- **Linux / macOS:**
+  ```bash
+  PORT=8080 npm start
+  ```
 
-### 2. Onde ficam salvas minhas questões e meu histórico de estudos?
-Todos os dados ficam armazenados localmente no arquivo SQLite em:
-`data/prisma.db`  
-Este arquivo é criado automaticamente na primeira inicialização e possui migrações automáticas.
-
-### 3. Preciso de internet o tempo todo para usar a ferramenta?
-**Não!** Você só precisa de internet no momento de importar novas questões. Depois que as questões foram importadas para o seu banco local, você pode estudar, resolver simulados e acompanhar seu progresso 100% offline.
-
-### 4. Como funciona a função "🛠️ Reparar" nas importações?
-Ao importar grandes volumes de questões, o servidor de origem pode apresentar lentidão temporária (como erro HTTP 504 Gateway Timeout). Quando isso ocorre, o sistema salva o ponto exato da última página processada. Ao clicar em **Reparar**, o importador retoma a partir da página interrompida, evitando duplicatas e poupando tempo.
-
-### 5. Como resetar meu banco de dados para o estado inicial?
-Para recomeçar do zero:
-1. Encerre o servidor (`Ctrl + C`).
-2. Delete o arquivo `data/prisma.db` (ou a pasta `data/`).
-3. Inicie novamente com `npm start`. O sistema recriará o banco limpo e restaurará automaticamente todas as 24 disciplinas e 897 assuntos a partir do `seed-data.json`.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Backend:** Node.js, Express.js
-- **Banco de Dados:** SQLite 3 via `better-sqlite3` (rápido, embarcado e síncrono)
-- **Scraping & Requisições:** Axios (com retry exponencial para resiliência de rede) e Cheerio
-- **Frontend:** SPA nativa (HTML5, Vanilla CSS com CSS Custom Properties e JavaScript modular ES6+)
-- **Ícones & Fontes:** Google Fonts (Inter) e SVG inline otimizado
-
----
-
-## 📂 Estrutura do Projeto
-
+### 2. Onde ficam guardadas as 39.000 questões e meu progresso?
+Tudo fica no arquivo SQLite local:
 ```text
-prisma-study-tool/
-├── api/                  # Rotas REST (subjects, questions, import, progress)
-│   └── routes/
-├── database/             # Conexão SQLite, migrations e dados de seed inicial
-│   ├── db.js
-│   ├── migrations.js
-│   └── seed-data.json    # 24 disciplinas e 897 tópicos pré-configurados
-├── data/                 # Diretório onde o banco prisma.db é criado
-├── public/               # Frontend da aplicação web
-│   ├── css/
-│   │   └── style.css     # Design System (Modo Escuro e Claro)
-│   ├── js/
-│   │   ├── app.js        # Estado global, router, tema
-│   │   ├── dashboard.js  # Métricas e resumo
-│   │   ├── import.js     # Painel de importação e reparo
-│   │   ├── questions.js  # Listagem e filtros
-│   │   ├── quiz.js       # Resolução de questões e Google grabber
-│   │   └── progress.js   # Estatísticas por disciplina
-│   └── index.html        # Shell SPA da aplicação
-├── scraper/              # Motor de extração e cliente GraphQL
-│   ├── graphql.js
-│   ├── images.js
-│   ├── index.js
-│   └── parser.js
-├── package.json
-├── server.js             # Ponto de entrada do servidor Node/Express
-└── README.md             # Documentação oficial
+data/prisma.db
 ```
+Esse banco de dados viaja com o projeto e é atualizado automaticamente sempre que você responde ou importa questões.
+
+### 3. Preciso de internet para usar o app?
+- **Para resolver as 39.000 questões:** Não! O banco de dados e a interface funcionam 100% offline.
+- **Para o assistente de IA ou buscas externas no Google:** É necessária conexão com a internet.
+
+---
+
+## 🛠️ Tecnologias
+
+- **Servidor Web:** Node.js & Express.js
+- **Banco de Dados:** SQLite3 gerenciado por `better-sqlite3` (alta performance e execução síncrona local)
+- **Frontend:** SPA responsiva em Vanilla HTML5, CSS Custom Properties e ES Modules
+- **Inteligência Artificial:** Google Gemini API
+- **Ícones & UI:** Lucide Icons & Google Fonts (Inter)
 
 ---
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
-
----
-
-Feito com dedicação para turbinar sua preparação para vestibulares e concursos! 🚀
+Distribuído sob a licença MIT. Bons estudos e excelente preparação! 🚀

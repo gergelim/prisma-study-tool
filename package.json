@@ -2,7 +2,7 @@
   "name": "know-study-app",
   "version": "1.0.0",
   "description": "know — Plataforma prática e inteligente de questões com IA e acompanhamento de progresso",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
