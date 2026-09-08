@@ -19,9 +19,7 @@ function loadEnv() {
           if (eqIdx !== -1) {
             const key = trimmed.slice(0, eqIdx).trim();
             const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, '');
-            if (!process.env[key]) {
-              process.env[key] = val;
-            }
+            process.env[key] = val;
           }
         }
       });
@@ -144,9 +142,11 @@ router.post('/chat', async (req, res) => {
       });
     }
 
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+
     // Chamada à API Gemini com timeout e limite de tokens
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
       {
         contents,
         generationConfig: {
