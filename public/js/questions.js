@@ -6,11 +6,6 @@ async function renderQuestions() {
     await loadDisciplines();
   }
 
-  // Build discipline select
-  const discOptions = state.disciplines.map(d =>
-    `<option value="${d.id}" ${state.questionDiscipline === d.id ? 'selected' : ''}>${d.name}</option>`
-  ).join('');
-
   const selectedDisc = state.disciplines.find(d => d.id === state.questionDiscipline);
   let subjOptions = '<option value="">Todos os assuntos</option>';
   if (selectedDisc && selectedDisc.subjects) {
@@ -26,11 +21,29 @@ async function renderQuestions() {
 
   el.innerHTML = `
     <!-- Filters Bar -->
-    <div class="flex gap-12 flex-wrap mb-16">
-      <select class="form-control" style="width:auto;min-width:180px" id="q-disc-select" onchange="onDiscChange()">
-        <option value="">Todas as matérias</option>
-        ${discOptions}
-      </select>
+    <div class="flex gap-12 flex-wrap mb-16 items-center">
+      <!-- Combobox Pesquisável de Matéria -->
+      <div class="combobox-container" id="q-disc-combobox" style="min-width:220px;max-width:300px;">
+        <div class="combobox-input-wrap">
+          <span class="combobox-icon-search">🔎</span>
+          <input type="text"
+                 class="combobox-input"
+                 id="q-disc-input"
+                 placeholder="Todas as matérias..."
+                 value="${selectedDisc ? selectedDisc.name : ''}"
+                 autocomplete="off"
+                 spellcheck="false">
+          <button type="button"
+                  class="combobox-clear-btn"
+                  id="q-disc-clear"
+                  style="${selectedDisc ? 'display:flex' : 'display:none'}"
+                  title="Limpar filtro de matéria"
+                  aria-label="Limpar">✕</button>
+          <input type="hidden" id="q-disc-select" value="${state.questionDiscipline || ''}">
+        </div>
+        <div class="combobox-dropdown" id="q-disc-dropdown" role="listbox"></div>
+      </div>
+
       <select class="form-control" style="width:auto;min-width:180px" id="q-subj-select" onchange="onSubjChange()">
         ${subjOptions}
       </select>
@@ -50,30 +63,251 @@ async function renderQuestions() {
     </div>
   `;
 
+  initQuestionsDisciplineCombobox();
   await loadQuestionsList();
 }
 
-async function onDiscChange() {
-  state.questionDiscipline = document.getElementById('q-disc-select').value;
-  state.questionSubject = '';
-  state.questionPage = 1;
+/**
+ * Controla o combobox de matérias na página de listagem de questões.
+ */
+function initQuestionsDisciplineCombobox() {
+  const container = document.getElementById('q-disc-combobox');
+  const input = document.getElementById('q-disc-input');
+  const hidden = document.getElementById('q-disc-select');
+  const clearBtn = document.getElementById('q-disc-clear');
+  const dropdown = document.getElementById('q-disc-dropdown');
 
-  // Update subjects dropdown
-  const subjEl = document.getElementById('q-subj-select');
-  subjEl.innerHTML = '<option value="">Todos os assuntos</option>';
-  const disc = state.disciplines.find(d => d.id === state.questionDiscipline);
-  if (disc && disc.subjects) {
-    disc.subjects.forEach(s => {
-      subjEl.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-      if (s.children) {
-        s.children.forEach(c => {
-          subjEl.innerHTML += `<option value="${c.id}">  └ ${c.name}</option>`;
+  if (!container || !input || !hidden || !clearBtn || !dropdown) return;
+
+  let activeIndex = -1;
+  let currentItems = [];
+
+  function norm(str) {
+    return (str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  function highlight(fullText, query) {
+    if (!query) return escapeHtml(fullText);
+    const nFull = norm(fullText);
+    const nQuery = norm(query);
+    const idx = nFull.indexOf(nQuery);
+    if (idx === -1) return escapeHtml(fullText);
+
+    const before = fullText.substring(0, idx);
+    const match = fullText.substring(idx, idx + query.length);
+    const after = fullText.substring(idx + query.length);
+    return `${escapeHtml(before)}<span class="combobox-match">${escapeHtml(match)}</span>${escapeHtml(after)}`;
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function openDropdown() {
+    renderDropdown();
+    dropdown.classList.add('open');
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    activeIndex = -1;
+  }
+
+  function renderDropdown() {
+    const query = input.value.trim();
+    const normQuery = norm(query);
+    dropdown.innerHTML = '';
+    currentItems = [];
+
+    const disciplines = state.disciplines || [];
+    let filtered = [];
+
+    if (!normQuery) {
+      filtered = [...disciplines];
+    } else {
+      filtered = disciplines.filter(d => {
+        return norm(d.name).includes(normQuery) || norm(d.slug).includes(normQuery);
+      });
+    }
+
+    // Option: "Todas as matérias" at the top
+    const allOption = document.createElement('div');
+    allOption.className = 'combobox-item';
+    if (!state.questionDiscipline) {
+      allOption.classList.add('selected');
+    }
+    allOption.setAttribute('role', 'option');
+    allOption.innerHTML = `<span>📋 <em>Todas as matérias</em></span>`;
+    allOption.addEventListener('click', () => {
+      selectDiscipline(null);
+    });
+    dropdown.appendChild(allOption);
+    currentItems.push({ type: 'all', element: allOption });
+
+    if (filtered.length > 0) {
+      filtered.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'combobox-item';
+        if (state.questionDiscipline === d.id) {
+          item.classList.add('selected');
+        }
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-id', d.id);
+        item.setAttribute('data-name', d.name);
+
+        const countText = d.questionCount ? `${d.questionCount} questões` : '';
+        item.innerHTML = `
+          <span>${highlight(d.name, query)}</span>
+          ${countText ? `<span class="combobox-item-count">${countText}</span>` : ''}
+        `;
+
+        item.addEventListener('click', () => {
+          selectDiscipline(d);
         });
+
+        dropdown.appendChild(item);
+        currentItems.push({ type: 'disc', data: d, element: item });
+      });
+    } else if (query) {
+      const empty = document.createElement('div');
+      empty.className = 'combobox-empty';
+      empty.textContent = `Nenhuma matéria encontrada para "${query}"`;
+      dropdown.appendChild(empty);
+    }
+
+    activeIndex = -1;
+    updateHighlight();
+  }
+
+  function updateHighlight() {
+    currentItems.forEach((item, idx) => {
+      if (idx === activeIndex) {
+        item.element.classList.add('highlighted');
+        item.element.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.element.classList.remove('highlighted');
       }
     });
   }
 
-  await loadQuestionsList();
+  function selectDiscipline(disc) {
+    if (disc) {
+      input.value = disc.name;
+      hidden.value = disc.id;
+      state.questionDiscipline = disc.id;
+      clearBtn.style.display = 'flex';
+    } else {
+      input.value = '';
+      hidden.value = '';
+      state.questionDiscipline = '';
+      clearBtn.style.display = 'none';
+    }
+
+    state.questionSubject = '';
+    state.questionPage = 1;
+    closeDropdown();
+
+    // Update subjects dropdown
+    updateSubjectsDropdown();
+    loadQuestionsList();
+  }
+
+  function updateSubjectsDropdown() {
+    const subjEl = document.getElementById('q-subj-select');
+    if (!subjEl) return;
+    subjEl.innerHTML = '<option value="">Todos os assuntos</option>';
+    const disc = state.disciplines.find(d => d.id === state.questionDiscipline);
+    if (disc && disc.subjects) {
+      disc.subjects.forEach(s => {
+        subjEl.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        if (s.children) {
+          s.children.forEach(c => {
+            subjEl.innerHTML += `<option value="${c.id}">  └ ${c.name}</option>`;
+          });
+        }
+      });
+    }
+  }
+
+  // Events
+  input.addEventListener('focus', () => {
+    openDropdown();
+  });
+
+  input.addEventListener('input', () => {
+    clearBtn.style.display = input.value ? 'flex' : 'none';
+    if (!input.value) {
+      state.questionDiscipline = '';
+      hidden.value = '';
+      state.questionSubject = '';
+      state.questionPage = 1;
+      updateSubjectsDropdown();
+      loadQuestionsList();
+    }
+    openDropdown();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (!dropdown.classList.contains('open')) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        openDropdown();
+        e.preventDefault();
+        return;
+      }
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (currentItems.length > 0) {
+        activeIndex = (activeIndex + 1) % currentItems.length;
+        updateHighlight();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (currentItems.length > 0) {
+        activeIndex = (activeIndex - 1 + currentItems.length) % currentItems.length;
+        updateHighlight();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIndex >= 0 && currentItems[activeIndex]) {
+        const item = currentItems[activeIndex];
+        if (item.type === 'all') {
+          selectDiscipline(null);
+        } else if (item.type === 'disc') {
+          selectDiscipline(item.data);
+        }
+      } else if (currentItems.length > 0) {
+        // Select first matching discipline
+        const first = currentItems.find(i => i.type === 'disc');
+        if (first) {
+          selectDiscipline(first.data);
+        }
+      }
+    } else if (e.key === 'Escape') {
+      closeDropdown();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    selectDiscipline(null);
+    input.focus();
+    openDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!container.contains(e.target)) {
+      closeDropdown();
+    }
+  });
 }
 
 async function onSubjChange() {
